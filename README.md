@@ -125,6 +125,9 @@ PYTHONPATH=. python -u products_walklm_gnn.py \
 
 ### `ogbn-arxiv`, 10k subset
 
+These results come from `walklm.py`, with Node2Vec/GCN/GraphSAGE run as
+separate same-subset baselines.
+
 | Method | Test Accuracy |
 |---|---:|
 | Node2Vec | 0.1643 |
@@ -136,6 +139,8 @@ PYTHONPATH=. python -u products_walklm_gnn.py \
 
 ### `ogbn-products` scaling
 
+These MLP-based results come from `walklm.py`.
+
 | Subset | Raw features + MLP | WalkLM embeddings + MLP | WalkLM + raw features + MLP |
 |---:|---:|---:|---:|
 | 10k | 0.5360 | 0.5855 | 0.6335 |
@@ -144,6 +149,9 @@ PYTHONPATH=. python -u products_walklm_gnn.py \
 | 100k | 0.5566 | 0.6185 | 0.6666 |
 
 ### `ogbn-products`, 100k subset with GNN classifiers
+
+These results come from `products_walklm_gnn.py`, using embeddings saved by
+`walklm.py --save_embeddings`.
 
 | Method | Test Accuracy |
 |---|---:|
