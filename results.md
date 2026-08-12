@@ -1,36 +1,54 @@
-# Initial results
+# Results
 
-Dataset: `ogbn-arxiv`
+All WalkLM subset experiments use a controlled split sampled from the official
+OGB train/validation/test partitions. These are lightweight experiments for
+method exploration, not leaderboard submissions.
 
-Subset: first 10,000 nodes induced subgraph
-
-Language model: `google/bert_uncased_L-2_H-128_A-2`
-
-WalkLM command:
-
-```bash
-PYTHONPATH=. python -u walklm.py \
-  --dataset ogbn-arxiv \
-  --hf_model google/bert_uncased_L-2_H-128_A-2 \
-  --max_nodes 10000 \
-  --mlm_epochs 2 \
-  --epochs 100 \
-  --batch_size 16 \
-  --num_walks 4 \
-  --walk_length 4 \
-  --max_text_chars 256 \
-  --use_raw_features
-```
+## `ogbn-arxiv`, 10k subset
 
 | Method | Test Accuracy |
 |---|---:|
+| Node2Vec | 0.1643 |
 | Raw features + MLP | 0.5063 |
-| WalkLM embeddings + MLP | 0.5145 |
-| WalkLM + raw features + MLP | 0.5651 |
 | GCN | 0.5109 |
 | GraphSAGE | 0.5045 |
+| WalkLM embeddings + MLP | 0.5145 |
+| WalkLM + raw features + MLP | 0.5651 |
 
-Takeaway: WalkLM embeddings alone slightly outperform raw features in this
-subset experiment, and combining WalkLM embeddings with raw features gives the
-best result.
+## `ogbn-products` scaling
 
+| Subset | Raw features + MLP | WalkLM embeddings + MLP | WalkLM + raw features + MLP |
+|---:|---:|---:|---:|
+| 10k | 0.5360 | 0.5855 | 0.6335 |
+| 20k | 0.5480 | 0.6035 | 0.6462 |
+| 50k | 0.5570 | 0.6166 | 0.6580 |
+| 100k | 0.5566 | 0.6185 | 0.6666 |
+
+Takeaway: WalkLM embeddings consistently outperform raw features in the MLP
+setting, and concatenating WalkLM embeddings with raw features is best at every
+subset size tested.
+
+## `ogbn-products`, 100k subset with GNN classifiers
+
+| Method | Test Accuracy |
+|---|---:|
+| GCN + Raw features | 0.6493 |
+| GCN + WalkLM embeddings | 0.6607 |
+| GCN + WalkLM + raw features | 0.6999 |
+| GraphSAGE + Raw features | 0.6325 |
+| GraphSAGE + WalkLM embeddings | 0.6407 |
+| GraphSAGE + WalkLM + raw features | 0.6756 |
+
+Takeaway: WalkLM also helps when used as input features for GNN classifiers.
+The best 100k-subset result observed was `GCN + WalkLM + raw features` at
+`0.6999`.
+
+## Existing PyG full-dataset reference
+
+| Example | Dataset | Test Accuracy |
+|---|---|---:|
+| `examples/correct_and_smooth.py` | full `ogbn-products` | 0.8377 |
+
+This full-dataset PyG example is not directly comparable to the subset WalkLM
+experiments, but it motivates future work: using WalkLM embeddings inside the
+full PyG training and post-processing pipelines.

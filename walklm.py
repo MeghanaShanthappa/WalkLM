@@ -10,8 +10,9 @@ This example demonstrates a compact WalkLM-style pipeline:
 6. Compare raw features, WalkLM embeddings, and their concatenation for node
    classification.
 
-The Cora path is a lightweight smoke test. The ``ogbn-arxiv`` path uses real
-paper text and is the more meaningful text-attributed graph experiment.
+The Cora path is a lightweight smoke test. The ``ogbn-arxiv`` and
+``ogbn-products`` paths use real text and are the more meaningful
+text-attributed graph experiments.
 
 Requirements on top of basic PyG:
 
@@ -34,6 +35,7 @@ from torch.utils.data import DataLoader, Dataset
 
 from torch_geometric import seed_everything
 from torch_geometric.datasets import Planetoid
+from torch_geometric.utils import subgraph
 
 # TODO: Remove once OGB supports PyTorch >= 2.6 weights_only defaults.
 _original_torch_load = torch.load
@@ -322,25 +324,30 @@ def run_classifier(
 
 def load_dataset(args) -> Tuple[object, object, Optional[List[str]]]:
     if args.dataset in ['Cora', 'CiteSeer', 'PubMed']:
-        path = osp.join(osp.dirname(osp.realpath(__file__)), '..', '..',
-                        'data', 'Planetoid')
+        path = osp.join(osp.dirname(osp.realpath(__file__)), 'data',
+                        'Planetoid')
         dataset = Planetoid(path, name=args.dataset)
         data = dataset[0]
         return dataset, data, None
 
-    if args.dataset == 'ogbn-arxiv':
-        from ogb.nodeproppred import PygNodePropPredDataset
+    if args.dataset in ['ogbn-arxiv', 'ogbn-products']:
+        from ogb.nodeproppred.dataset_pyg import PygNodePropPredDataset
         from pandas import read_csv
         from torch_geometric.data import download_google_url
 
-        root = osp.join(osp.dirname(osp.realpath(__file__)), '..', '..',
-                        'data', 'ogb')
-        dataset = PygNodePropPredDataset(name='ogbn-arxiv', root=root)
+        root = osp.join(osp.dirname(osp.realpath(__file__)), 'data', 'ogb')
+        dataset = PygNodePropPredDataset(name=args.dataset, root=root)
         data = dataset[0]
 
+        raw_text_id = {
+            'ogbn-arxiv': '1g3OOVhRyiyKv13LY6gbp8GLITocOUr_3',
+            'ogbn-products': '1I-S176-W4Bm1iPDjQv3hYwQBtxE0v8mt',
+        }[args.dataset]
+        raw_dir_name = args.dataset.replace('-', '_')
+
         raw_text_path = download_google_url(
-            id='1g3OOVhRyiyKv13LY6gbp8GLITocOUr_3',
-            folder=osp.join(root, 'ogbn_arxiv', 'raw'),
+            id=raw_text_id,
+            folder=osp.join(root, raw_dir_name, 'raw'),
             filename='node-text.csv.gz',
             log=True,
         )
@@ -362,7 +369,13 @@ def load_dataset(args) -> Tuple[object, object, Optional[List[str]]]:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', type=str, default='Cora',
-                        choices=['Cora', 'CiteSeer', 'PubMed', 'ogbn-arxiv'])
+                        choices=[
+                            'Cora',
+                            'CiteSeer',
+                            'PubMed',
+                            'ogbn-arxiv',
+                            'ogbn-products',
+                        ])
     parser.add_argument('--hf_model', type=str,
                         default='google/bert_uncased_L-2_H-128_A-2')
     parser.add_argument('--num_walks', type=int, default=8)
@@ -381,6 +394,7 @@ def main() -> None:
     parser.add_argument('--use_raw_features', action='store_true')
     parser.add_argument('--max_nodes', type=int, default=None)
     parser.add_argument('--max_text_chars', type=int, default=256)
+    parser.add_argument('--save_embeddings', action='store_true')
     args = parser.parse_args()
 
     try:
@@ -396,10 +410,44 @@ def main() -> None:
     dataset, data, text = load_dataset(args)
 
     if args.max_nodes is not None and data.num_nodes > args.max_nodes:
-        node_idx = torch.arange(args.max_nodes)
-        data = data.subgraph(node_idx)
-        if text is not None:
-            text = text[:args.max_nodes]
+        if args.dataset in ['ogbn-arxiv', 'ogbn-products']:
+            split_idx = dataset.get_idx_split()
+
+            num_train = int(args.max_nodes * 0.6)
+            num_val = int(args.max_nodes * 0.2)
+            num_test = args.max_nodes - num_train - num_val
+
+            train_nodes = split_idx['train'][:num_train]
+            val_nodes = split_idx['valid'][:num_val]
+            test_nodes = split_idx['test'][:num_test]
+
+            node_idx = torch.cat([train_nodes, val_nodes, test_nodes], dim=0)
+            edge_index, _ = subgraph(
+                node_idx,
+                data.edge_index,
+                relabel_nodes=True,
+            )
+
+            data.x = data.x[node_idx]
+            data.y = data.y[node_idx].view(-1)
+            data.edge_index = edge_index
+            data.num_nodes = node_idx.numel()
+
+            data.train_mask = torch.zeros(data.num_nodes, dtype=torch.bool)
+            data.val_mask = torch.zeros(data.num_nodes, dtype=torch.bool)
+            data.test_mask = torch.zeros(data.num_nodes, dtype=torch.bool)
+
+            data.train_mask[:num_train] = True
+            data.val_mask[num_train:num_train + num_val] = True
+            data.test_mask[num_train + num_val:] = True
+
+            if text is not None:
+                text = [text[int(i)] for i in node_idx]
+        else:
+            node_idx = torch.arange(args.max_nodes)
+            data = data.subgraph(node_idx)
+            if text is not None:
+                text = text[:args.max_nodes]
 
     y = data.y.to(device)
     train_mask = data.train_mask.to(device)
@@ -480,6 +528,14 @@ def main() -> None:
         batch_size=args.batch_size,
         device=device,
     )
+
+    if args.save_embeddings and args.dataset == 'ogbn-products':
+        save_path = f'walklm_products_{data.num_nodes}_embeddings.pt'
+        torch.save({
+            'walklm_x': walklm_x.cpu(),
+            'raw_x': data.x.cpu(),
+        }, save_path)
+        print(f'Saved WalkLM embeddings to {save_path}')
 
     walklm_test = run_classifier(
         'WalkLM embeddings',
