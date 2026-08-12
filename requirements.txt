@@ -1,0 +1,11 @@
+torch
+torch-geometric
+ogb
+pandas
+transformers==4.44.2
+requests
+aiohttp
+scikit-learn
+tqdm
+xxhash
+
