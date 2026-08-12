@@ -122,17 +122,7 @@ PYTHONPATH=. python -u products_walklm_gnn.py \
 | GraphSAGE + WalkLM embeddings | 0.6407 |
 | GraphSAGE + WalkLM + raw features | 0.6756 |
 
-### Existing PyG full-dataset reference
-
-For context, PyG already includes full `ogbn-products` examples such as
-`examples/ogbn_train.py`, `examples/rev_gnn.py`, and
-`examples/correct_and_smooth.py`. In one full-dataset run of
-`examples/correct_and_smooth.py`, the final result was:
-
-| Example | Dataset | Test Accuracy |
-|---|---|---:|
-| `examples/correct_and_smooth.py` | full `ogbn-products` | 0.8377 |
-
-This full-dataset result is not directly comparable to the subset WalkLM
-experiments, but it is useful context for future work that combines WalkLM
-embeddings with full PyG training pipelines.
+All reported comparisons above use the same subset/split family and focus on
+raw-feature MLP, GCN, GraphSAGE, and WalkLM-based variants. Stronger
+full-dataset post-processing pipelines are complementary and left for future
+work.

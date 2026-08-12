@@ -43,12 +43,8 @@ Takeaway: WalkLM also helps when used as input features for GNN classifiers.
 The best 100k-subset result observed was `GCN + WalkLM + raw features` at
 `0.6999`.
 
-## Existing PyG full-dataset reference
+## Scope
 
-| Example | Dataset | Test Accuracy |
-|---|---|---:|
-| `examples/correct_and_smooth.py` | full `ogbn-products` | 0.8377 |
-
-This full-dataset PyG example is not directly comparable to the subset WalkLM
-experiments, but it motivates future work: using WalkLM embeddings inside the
-full PyG training and post-processing pipelines.
+The tables above intentionally compare against same-subset MLP, GCN, and
+GraphSAGE baselines. Full-dataset post-processing methods are complementary and
+are left for future work.
