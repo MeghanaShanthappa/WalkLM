@@ -44,6 +44,38 @@ python -m pip install pyg-lib torch-scatter torch-sparse torch-cluster \
   -f https://data.pyg.org/whl/torch-2.8.0+cu128.html
 ```
 
+
+## What each script does
+
+### `walklm.py`
+
+This is the main WalkLM-style experiment. It loads a graph dataset, samples
+attributed random walks, converts those walks into text, fine-tunes a small
+masked language model, extracts node embeddings, and evaluates them with an
+MLP classifier. It compares:
+
+- raw node features,
+- WalkLM embeddings,
+- WalkLM embeddings concatenated with raw node features.
+
+For `ogbn-arxiv` and `ogbn-products`, it uses real node text. With
+`--save_embeddings`, it also saves the learned WalkLM node embeddings for
+downstream experiments.
+
+### `products_walklm_gnn.py`
+
+This is the follow-up GNN baseline script for `ogbn-products`. It does not
+train the language model again. Instead, it loads saved embeddings from
+`walklm.py` and checks whether those embeddings improve GNN classifiers. It
+compares:
+
+- GCN with raw features, WalkLM embeddings, and WalkLM + raw features,
+- GraphSAGE with raw features, WalkLM embeddings, and WalkLM + raw features.
+
+In short: `walklm.py` creates and evaluates WalkLM embeddings with an MLP, while
+`products_walklm_gnn.py` tests whether those embeddings also help GCN and
+GraphSAGE baselines.
+
 ## Run WalkLM on `ogbn-arxiv`
 
 ```bash
