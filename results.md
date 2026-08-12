@@ -43,6 +43,22 @@ Takeaway: WalkLM also helps when used as input features for GNN classifiers.
 The best 100k-subset result observed was `GCN + WalkLM + raw features` at
 `0.6999`.
 
+## `ogbn-products`, 500k custom random split with Correct & Smooth
+
+These exploratory results use a larger custom random 500k split
+(300k train / 100k validation / 100k test). They are not directly comparable to
+the smaller official-split subset tables above.
+
+| Method | Test Accuracy |
+|---|---:|
+| MLP + Raw features + Correct & Smooth | 0.8625 |
+| GCN + Raw features + Correct & Smooth | 0.8580 |
+| MLP + WalkLM + raw features + Correct & Smooth | 0.8746 |
+| GCN + WalkLM + raw features + Correct & Smooth | 0.8703 |
+
+Takeaway: WalkLM features improve both MLP and GCN Correct & Smooth pipelines
+on this larger exploratory split.
+
 ## Scope
 
 The tables above intentionally compare against same-subset MLP, GCN, and

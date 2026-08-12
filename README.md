@@ -162,6 +162,20 @@ These results come from `products_walklm_gnn.py`, using embeddings saved by
 | GraphSAGE + WalkLM embeddings | 0.6407 |
 | GraphSAGE + WalkLM + raw features | 0.6756 |
 
+### `ogbn-products`, 500k custom random split with Correct & Smooth
+
+These exploratory results use a larger custom random 500k split
+(300k train / 100k validation / 100k test). They are not directly comparable to
+the smaller official-split subset tables above, but they test whether WalkLM
+features still help in a stronger Correct & Smooth pipeline.
+
+| Method | Test Accuracy |
+|---|---:|
+| MLP + Raw features + Correct & Smooth | 0.8625 |
+| GCN + Raw features + Correct & Smooth | 0.8580 |
+| MLP + WalkLM + raw features + Correct & Smooth | 0.8746 |
+| GCN + WalkLM + raw features + Correct & Smooth | 0.8703 |
+
 All reported comparisons above use the same subset/split family and focus on
 raw-feature MLP, GCN, GraphSAGE, and WalkLM-based variants. Stronger
 full-dataset post-processing pipelines are complementary and left for future
