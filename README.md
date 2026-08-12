@@ -172,9 +172,11 @@ features still help in a stronger Correct & Smooth pipeline.
 | Method | Test Accuracy |
 |---|---:|
 | MLP + Raw features + Correct & Smooth | 0.8625 |
-| GCN + Raw features + Correct & Smooth | 0.8580 |
-| MLP + WalkLM + raw features + Correct & Smooth | 0.8746 |
-| GCN + WalkLM + raw features + Correct & Smooth | 0.8703 |
+| GCN + Raw features + Correct & Smooth | 0.8584 |
+| GraphSAGE + Raw features + Correct & Smooth | 0.8487 |
+| MLP + WalkLM + raw features + Correct & Smooth | 0.8750 |
+| GCN + WalkLM + raw features + Correct & Smooth | 0.8701 |
+| GraphSAGE + WalkLM + raw features + Correct & Smooth | 0.8677 |
 
 All reported comparisons above use the same subset/split family and focus on
 raw-feature MLP, GCN, GraphSAGE, and WalkLM-based variants. Stronger

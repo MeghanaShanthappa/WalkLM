@@ -52,12 +52,14 @@ the smaller official-split subset tables above.
 | Method | Test Accuracy |
 |---|---:|
 | MLP + Raw features + Correct & Smooth | 0.8625 |
-| GCN + Raw features + Correct & Smooth | 0.8580 |
-| MLP + WalkLM + raw features + Correct & Smooth | 0.8746 |
-| GCN + WalkLM + raw features + Correct & Smooth | 0.8703 |
+| GCN + Raw features + Correct & Smooth | 0.8584 |
+| GraphSAGE + Raw features + Correct & Smooth | 0.8487 |
+| MLP + WalkLM + raw features + Correct & Smooth | 0.8750 |
+| GCN + WalkLM + raw features + Correct & Smooth | 0.8701 |
+| GraphSAGE + WalkLM + raw features + Correct & Smooth | 0.8677 |
 
-Takeaway: WalkLM features improve both MLP and GCN Correct & Smooth pipelines
-on this larger exploratory split.
+Takeaway: WalkLM features improve MLP, GCN, and GraphSAGE Correct &
+Smooth pipelines on this larger exploratory split.
 
 ## Scope
 
