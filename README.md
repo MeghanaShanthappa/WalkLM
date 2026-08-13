@@ -137,17 +137,6 @@ separate same-subset baselines.
 | WalkLM embeddings + MLP | 0.5145 |
 | WalkLM + raw features + MLP | 0.5651 |
 
-### `ogbn-products` scaling
-
-These MLP-based results come from `walklm.py`.
-
-| Subset | Raw features + MLP | WalkLM embeddings + MLP | WalkLM + raw features + MLP |
-|---:|---:|---:|---:|
-| 10k | 0.5360 | 0.5855 | 0.6335 |
-| 20k | 0.5480 | 0.6035 | 0.6462 |
-| 50k | 0.5570 | 0.6166 | 0.6580 |
-| 100k | 0.5566 | 0.6185 | 0.6666 |
-
 ### `ogbn-products`, 100k subset with GNN classifiers
 
 These results come from `products_walklm_gnn.py`, using embeddings saved by
