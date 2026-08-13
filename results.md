@@ -39,6 +39,18 @@ subset size tested.
 | GraphSAGE + WalkLM embeddings | 0.6407 |
 | GraphSAGE + WalkLM + raw features | 0.6756 |
 
+This comparison asks whether WalkLM still helps once a real GNN already uses
+graph structure. `GCN + raw features` and `GraphSAGE + raw features` use the
+original node features with graph message passing. The WalkLM variants first
+concatenate each node's raw features with its WalkLM embedding, then pass the
+enriched features into the same GCN or GraphSAGE classifier.
+
+In short, GCN/GraphSAGE read the graph numerically through message passing,
+while WalkLM reads graph neighborhoods as text through attributed random walks.
+The improvement from raw features to WalkLM + raw features suggests that the
+textualized random-walk embeddings add complementary signal beyond standard GNN
+aggregation.
+
 Takeaway: WalkLM also helps when used as input features for GNN classifiers.
 The best 100k-subset result observed was `GCN + WalkLM + raw features` at
 `0.6999`.
