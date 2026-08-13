@@ -49,14 +49,11 @@ These exploratory results use a larger custom random 500k split
 (300k train / 100k validation / 100k test). They are not directly comparable to
 the smaller official-split subset tables above.
 
-| Method | Test Accuracy |
-|---|---:|
-| MLP + Raw features + Correct & Smooth | 0.8625 |
-| GCN + Raw features + Correct & Smooth | 0.8584 |
-| GraphSAGE + Raw features + Correct & Smooth | 0.8487 |
-| MLP + WalkLM + raw features + Correct & Smooth | 0.8750 |
-| GCN + WalkLM + raw features + Correct & Smooth | 0.8701 |
-| GraphSAGE + WalkLM + raw features + Correct & Smooth | 0.8677 |
+| Base pipeline | Raw features | WalkLM + raw features | Improvement |
+|---|---:|---:|---:|
+| MLP + Correct & Smooth | 0.8625 | 0.8750 | +0.0125 |
+| GCN + Correct & Smooth | 0.8584 | 0.8701 | +0.0117 |
+| GraphSAGE + Correct & Smooth | 0.8487 | 0.8677 | +0.0190 |
 
 Takeaway: WalkLM features improve MLP, GCN, and GraphSAGE Correct &
 Smooth pipelines on this larger exploratory split.
