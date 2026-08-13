@@ -23,7 +23,7 @@ The example supports:
   features.
 - optional saving of WalkLM embeddings for downstream GNN experiments.
 
-This is not a SOTA claim. The goal is to demonstrate that WalkLM-style
+The goal is to demonstrate that WalkLM-style
 attributed random-walk language modeling can provide complementary signal on
 real text-attributed graphs.
 
