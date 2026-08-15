@@ -60,8 +60,28 @@ the smaller official-split subset tables above.
 Takeaway: WalkLM features improve MLP, GCN, and GraphSAGE Correct &
 Smooth pipelines on this larger exploratory split.
 
+## `ogbn-products`, full official OGB split with SAGN/SLE-style training
+
+This full-scale experiment uses saved WalkLM embeddings concatenated with raw
+OGB features, then trains the external `SAGN_with_SLE` implementation with
+multi-stage SAGN training and Correct & Smooth post-processing.
+
+Dataset/split:
+
+- Nodes: 2,449,029
+- Undirected edges after preprocessing: 123,718,280
+- Train/validation/test: 196,615 / 39,323 / 2,213,091
+- Feature shape after concatenation: `[2449029, 228]`
+
+| Method | Train Acc | Val Acc | Test Acc |
+|---|---:|---:|---:|
+| SAGN + WalkLM + raw, stage 3 before postprocess | 0.9425 | 0.9256 | 0.8481 |
+| SAGN + WalkLM + raw + Correct & Smooth | 0.9780 | 0.9290 | 0.8517 |
+
+This is a single-run result (`seed=0`), not a 10-run leaderboard submission.
+
 ## Scope
 
-The tables above intentionally compare against same-subset MLP, GCN, and
-GraphSAGE baselines. Full-dataset post-processing methods are complementary and
-are left for future work.
+The tables above include both subset experiments and one full official-split
+SAGN/SLE-style experiment. The full official-split result should be treated as a
+single-run research result until repeated across more seeds.

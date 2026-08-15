@@ -181,5 +181,38 @@ features still help in a stronger Correct & Smooth pipeline.
 
 All reported comparisons above use the same subset/split family and focus on
 raw-feature MLP, GCN, GraphSAGE, and WalkLM-based variants. Stronger
-full-dataset post-processing pipelines are complementary and left for future
-work.
+full-dataset post-processing pipelines are complementary.
+
+### `ogbn-products`, full official OGB split with SAGN/SLE-style training
+
+This result uses the full `ogbn-products` graph with the official OGB
+train/validation/test split:
+
+- 2,449,029 nodes
+- 123,718,280 undirected edges after preprocessing
+- 196,615 train nodes
+- 39,323 validation nodes
+- 2,213,091 test nodes
+
+The experiment uses saved WalkLM embeddings from `walklm.py`, concatenated with
+the raw OGB node features:
+
+```text
+WalkLM embeddings: [2449029, 128]
+Raw OGB features:  [2449029, 100]
+Combined features: [2449029, 228]
+```
+
+The combined features were used with the external
+[`SAGN_with_SLE`](https://github.com/skepsun/SAGN_with_SLE) implementation using
+multi-stage SAGN training and Correct & Smooth post-processing.
+
+| Method | Train Acc | Val Acc | Test Acc |
+|---|---:|---:|---:|
+| SAGN + WalkLM + raw, stage 3 before postprocess | 0.9425 | 0.9256 | 0.8481 |
+| SAGN + WalkLM + raw + Correct & Smooth | 0.9780 | 0.9290 | 0.8517 |
+
+This is a single-run result (`seed=0`), not a 10-run leaderboard submission.
+Still, it shows that WalkLM features can improve a scalable leaderboard-style
+graph model on the full official `ogbn-products` split and cross 85% test
+accuracy in this run.
