@@ -216,3 +216,30 @@ This is a single-run result (`seed=0`), not a 10-run leaderboard submission.
 Still, it shows that WalkLM features can improve a scalable leaderboard-style
 graph model on the full official `ogbn-products` split and cross 85% test
 accuracy in this run.
+
+### `ogbn-products`, full official OGB split with LD-style LM features + WalkLM
+
+This experiment adds WalkLM embeddings to the extracted `bert-base-uncased`
+`products_sagn/hidden_state.pt` features released by the
+[`LD`](https://github.com/MIRALab-USTC/LD) project, then trains the external
+[`SAGN_with_SLE`](https://github.com/skepsun/SAGN_with_SLE) implementation with
+multi-stage SAGN/SLE training and Correct & Smooth/SCR-style post-processing.
+
+Feature stack:
+
+```text
+LD released hidden_state.pt: [2449029, 768]
+WalkLM embeddings:           [2449029, 128]
+Raw OGB features:            [2449029, 100]
+Combined features:           [2449029, 996]
+```
+
+| Method | Train Acc | Val Acc | Test Acc |
+|---|---:|---:|---:|
+| LD-style + WalkLM + raw + SAGN/SLE, stage 3 before postprocess | 0.9569 | 0.9385 | 0.8716 |
+| LD-style + WalkLM + raw + SAGN/SLE + Correct & Smooth/SCR | 0.9767 | 0.9383 | 0.8738 |
+
+This is a single-run result (`seed=0`), not a 10-run leaderboard submission.
+The result is comparable to the current top `ogbn-products` leaderboard range,
+but should not be interpreted as an official leaderboard claim until repeated
+across multiple seeds with mean and standard deviation.

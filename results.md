@@ -80,6 +80,37 @@ Dataset/split:
 
 This is a single-run result (`seed=0`), not a 10-run leaderboard submission.
 
+## `ogbn-products`, full official OGB split with LD-style LM features + WalkLM
+
+This experiment concatenates three feature sources:
+
+- released `bert-base-uncased/products_sagn/hidden_state.pt` features from the
+  external [`LD`](https://github.com/MIRALab-USTC/LD) project,
+- WalkLM embeddings generated in this repository,
+- raw OGB node features.
+
+Feature shapes:
+
+| Feature source | Shape |
+|---|---:|
+| LD released hidden states | `[2449029, 768]` |
+| WalkLM embeddings | `[2449029, 128]` |
+| Raw OGB features | `[2449029, 100]` |
+| Combined features | `[2449029, 996]` |
+
+The combined features are then used with the external
+[`SAGN_with_SLE`](https://github.com/skepsun/SAGN_with_SLE) implementation and
+Correct & Smooth/SCR-style post-processing.
+
+| Method | Train Acc | Val Acc | Test Acc |
+|---|---:|---:|---:|
+| LD-style + WalkLM + raw + SAGN/SLE, stage 3 before postprocess | 0.9569 | 0.9385 | 0.8716 |
+| LD-style + WalkLM + raw + SAGN/SLE + Correct & Smooth/SCR | 0.9767 | 0.9383 | 0.8738 |
+
+This is a single-run result (`seed=0`), not a 10-run leaderboard submission.
+It is best described as a leaderboard-style research result until repeated
+across additional seeds.
+
 ## Scope
 
 The tables above include both subset experiments and one full official-split
