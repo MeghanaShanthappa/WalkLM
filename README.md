@@ -239,7 +239,27 @@ Combined features:           [2449029, 996]
 | LD-style + WalkLM + raw + SAGN/SLE, stage 3 before postprocess | 0.9569 | 0.9385 | 0.8716 |
 | LD-style + WalkLM + raw + SAGN/SLE + Correct & Smooth/SCR | 0.9767 | 0.9383 | 0.8738 |
 
-This is a single-run result (`seed=0`), not a 10-run leaderboard submission.
-The result is comparable to the current top `ogbn-products` leaderboard range,
-but should not be interpreted as an official leaderboard claim until repeated
-across multiple seeds with mean and standard deviation.
+The table above is the best single-run result observed with `seed=0`.
+
+A 5-seed run (`seed=0..4`) on the same official OGB split gives:
+
+| Method | Train Acc | Val Acc | Test Acc |
+|---|---:|---:|---:|
+| LD-style + WalkLM + raw + SAGN/SLE, stage 3 before postprocess | 0.9570 ± 0.0001 | 0.9391 ± 0.0006 | 0.8713 ± 0.0008 |
+| LD-style + WalkLM + raw + SAGN/SLE + Correct & Smooth/SCR | 0.9768 ± 0.0001 | 0.9383 ± 0.0001 | 0.8733 ± 0.0008 |
+| LD-style + WalkLM + raw + SAGN/SLE + tuned Correct & Smooth/SCR | 0.9846 ± 0.0001 | 0.9397 ± 0.0002 | 0.8734 ± 0.0008 |
+
+The tuned Correct & Smooth/SCR setting used:
+
+```text
+correction_alpha = 0.30
+smoothing_alpha  = 0.65
+scale            = 25
+correction layers = 50
+smoothing layers  = 50
+adjacency          = DAD
+```
+
+These are leaderboard-style research results on the official split, but not yet
+an official leaderboard submission because the run currently reports 5 seeds
+rather than the full 10-run protocol.
